@@ -17,6 +17,13 @@ const conf = convict({
         env: "PORT",
         arg: "port",
     },
+    postgres: {
+        doc: "DB connection string",
+        format: String,
+        default: null,
+        env: "POSTGRES_URL",
+        arg: "postgres_url",
+    },
 });
 
 // Perform validation

@@ -2,6 +2,7 @@ const express = require("express");
 const createError = require("http-errors");
 
 const config = require("../config");
+const v1Router = require("./routes/v1.0");
 
 const app = express();
 
@@ -12,6 +13,9 @@ app.use((req, res, next) => {
     err.message = `Not Found: ${req.originalUrl}`;
     next(err);
 });
+
+console.log(v1Router);
+app.use("/v1.0", v1Router);
 
 app.use((error, req, res, next) => {
     error = error || {};

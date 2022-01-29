@@ -5,7 +5,13 @@
   "main": "index.js",
   "scripts": {
     "start": "node index.js",
-    "test": "node_modules/.bin/nyc --clean node spec.js --seed=1234"
+    "create-migration": "knex --knexfile ./db/knexfile.js migrate:make",
+    "migrate": "knex --knexfile ./db/knexfile.js migrate:latest",
+    "rollback": "knex --knexfile ./db/knexfile.js migrate:rollback",
+    "rollback-all": "knex --knexfile ./db/knexfile.js migrate:rollback --all",
+    "seed": "knex --knexfile ./db/knexfile.js seed:make",
+    "seed:run": "knex --knexfile ./db/knexfile.js seed:run",
+    "test": "sh run.tests.sh"
   },
   "repository": {
     "type": "git",

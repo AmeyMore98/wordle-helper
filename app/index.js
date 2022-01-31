@@ -6,16 +6,15 @@ const v1Router = require("./routes/v1.0");
 
 const app = express();
 
-app.get("/ping", (req, res) => res.json({ "pong": "ok" }));
+app.get("/ping", (req, res, next) => res.json({ "pong": "ok" }));
+
+app.use("/v1.0", v1Router);
 
 app.use((req, res, next) => {
     let err = createError(404);
     err.message = `Not Found: ${req.originalUrl}`;
     next(err);
 });
-
-console.log(v1Router);
-app.use("/v1.0", v1Router);
 
 app.use((error, req, res, next) => {
     error = error || {};

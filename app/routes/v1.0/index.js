@@ -1,5 +1,7 @@
 const router = require("express").Router();
 
-router.use("/words", require("./words.routes"));
+const wordsRouter = require("./words.routes");
+
+router.use("/words", wordsRouter);
 
 module.exports = router;

@@ -1,10 +1,8 @@
-const express = require("express");
+const router = require("express").Router();
 const expressAsyncHandler = require("express-async-handler");
 const { query } = require("express-validator");
 const WordsModel = require("../../models/words.model");
 const routeUtils = require("../../utils.js/route.utils");
-
-const router = new express.Router();
 
 router.get(
     "/",
@@ -20,9 +18,9 @@ router.get(
         .withMessage("Must be a number"),
     routeUtils.validate,
     expressAsyncHandler(async (req, res) => {
-        const { pageNo, pageSize } = req.query;
+        const { pageNo = 1, pageSize = 50, has = [], notHas = [] } = req.query;
 
-        let { result: items, total } = await WordsModel.getAllWords(
+        let { results: items, total } = await WordsModel.getWords(
             pageNo - 1, // ObjectionJs pages are 0-indexed
             pageSize
         );

@@ -7,7 +7,7 @@ Model.knex(DB);
 
 class WordsModel extends Model {
     static get tableName() {
-        return "assets";
+        return "words";
     }
 
     static get jsonSchema() {
@@ -29,28 +29,32 @@ class WordsModel extends Model {
                 "5": {
                     type: "string",
                 },
-                "6": {
-                    type: "string",
-                },
             },
         };
     }
 
-    $formatJson(json) {
-        json = super.$formatJson(json);
-        json.word = [
-            json["1"],
-            json["2"],
-            json["3"],
-            json["4"],
-            json["5"],
-            json["6"],
-        ].join("");
-        return _.omit(json, ["1", "2", "3", "4", "5", "6"]);
+    static get virtualAttributes() {
+        return ["word"];
     }
 
-    static async getAllWords(pageNo = 0, pageSize = 50) {
-        return this.query().select().page(pageNo, pageSize);
+    get word() {
+        const word = [
+            this["1"],
+            this["2"],
+            this["3"],
+            this["4"],
+            this["5"],
+        ].join("");
+        return word;
+    }
+
+    $formatJson(json) {
+        json = super.$formatJson(json);
+        return _.omit(json, ["1", "2", "3", "4", "5"]);
+    }
+
+    static async getWords(pageNo = 0, pageSize = 50) {
+        return this.query().page(pageNo, pageSize);
     }
 }
 

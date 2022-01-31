@@ -39,20 +39,6 @@ jas.addReporter(specReporter);
 jas.env.configure({
     failFast: true,
 });
-// jas.onComplete(async function (passed) {
-//     fs.writeFileSync(
-//         path.resolve("./coverage/spec-summary.json"),
-//         JSON.stringify(SpecJSON, null, 2),
-//         "utf8"
-//     );
-//     if (passed) {
-//         console.log("passed");
-//         process.exit(0);
-//     } else {
-//         console.log("failed");
-//         process.exit(1);
-//     }
-// });
 
 jas.execute().then((passed) => {
     fs.writeFileSync(

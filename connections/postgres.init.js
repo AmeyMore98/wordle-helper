@@ -1,6 +1,5 @@
-"use strict";
-
-const knex_configuration = require("../db/knexfile");
+const config = require("../config");
+const knex_configuration = require("../db/knexfile")[config.env];
 
 const DB = require("knex")(knex_configuration);
 

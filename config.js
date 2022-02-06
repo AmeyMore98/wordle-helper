@@ -21,8 +21,8 @@ const conf = convict({
         doc: "DB connection string",
         format: String,
         default: "postgresql://root:root@localhost:5432/wordle-helper",
-        env: "POSTGRES_URL",
-        arg: "postgres_url",
+        env: "DATABASE_UR:",
+        arg: "database_url",
     },
 });
 

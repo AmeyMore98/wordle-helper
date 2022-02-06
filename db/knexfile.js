@@ -26,7 +26,10 @@ module.exports = {
     },
     production: {
         client: "pg",
-        connection: config.postgres,
+        connection: {
+            connectionString: config.postgres,
+            ssl: { rejectUnauthorized: false },
+        },
         useNullAsDefault: true,
         migrations: {
             directory: path.join(__dirname, "./migrations"),

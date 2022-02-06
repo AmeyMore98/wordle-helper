@@ -1,6 +1,6 @@
 const router = require("express").Router();
 const expressAsyncHandler = require("express-async-handler");
-const { query } = require("express-validator");
+const { query, body } = require("express-validator");
 const _ = require("lodash");
 
 const WordsModel = require("../../models/words.model");
@@ -8,6 +8,30 @@ const routeUtils = require("../../utils.js/route.utils");
 
 router.post(
     "/",
+    body("green")
+        .optional()
+        .isObject()
+        .bail()
+        .customSanitizer((value) => {
+            Object.keys(value).forEach((key) => {
+                value[key] = value[key].toString();
+            });
+            return value;
+        })
+        .withMessage("Must be a JSON"),
+    body("yellow")
+        .optional()
+        .isObject()
+        .bail()
+        .customSanitizer((value) => {
+            Object.keys(value).forEach((key) => {
+                value[key] = value[key].map((ele) => ele.toString());
+            });
+            return value;
+        })
+        .withMessage("Must be a JSON"),
+    body("grey").optional().isArray().withMessage("Must be an Array"),
+    body("grey.*").isString().notEmpty().withMessage("Must be a string"),
     query("pageNo")
         .optional()
         .isNumeric()
@@ -21,24 +45,11 @@ router.post(
     routeUtils.validate,
     expressAsyncHandler(async (req, res) => {
         const { pageNo = 1, pageSize = 50 } = req.query;
-        const { has = [], notHas = [] } = req.body;
-        const indexSearchOpts = _.pick(req.body, [
-            "1st",
-            "2nd",
-            "3rd",
-            "4th",
-            "5th",
-            "!1st",
-            "!2nd",
-            "!3rd",
-            "!4th",
-            "!5th",
-        ]);
-
+        const { green = {}, yellow = {}, grey = [] } = req.body;
         let { results: items, total } = await WordsModel.getWords(
-            indexSearchOpts,
-            has,
-            notHas,
+            green,
+            yellow,
+            grey,
             pageNo - 1, // ObjectionJs pages are 0-indexed
             pageSize
         );

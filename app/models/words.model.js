@@ -53,36 +53,49 @@ class WordsModel extends Model {
         return _.omit(json, ["1", "2", "3", "4", "5"]);
     }
 
-    static async getWords(
-        indexSearchOpts,
-        has,
-        notHas,
-        pageNo = 0,
-        pageSize = 50
-    ) {
+    static async getWords(green, yellow, grey, pageNo = 0, pageSize = 50) {
         const query = this.query();
-        Object.entries(indexSearchOpts).forEach(([key, value]) => {
-            if (key[0] === "!") {
-                query.whereNotIn(key[1], value);
-            } else {
-                query.where(key[0], value); // Key will be of the form "1st", "2nd", "3rd" etc.
+
+        // Eg. green: { "e": 3 } -> Get words with 'e' at index 3
+        Object.entries(green).forEach(([letter, index]) => {
+            // Only process the index which is a DB column
+            if (this.COLUMNS.includes(index)) {
+                query.where(index, letter);
             }
         });
-        has.forEach((value) => {
+
+        // Eg. yellow: { 't': [1,2] }
+        Object.entries(yellow).forEach(([letter, indexes]) => {
+            // Get words where 't' is not at index 1 & 2
+            indexes.forEach((index) => {
+                if (this.COLUMNS.includes(index)) {
+                    query.whereNot(index, letter);
+                }
+            });
+
+            // Get words where 't' could be at any index, other than, [1, 2] and any index in `green`
             query.where((builder) => {
-                for (const column of ["1", "2", "3", "4", "5"]) {
-                    builder.orWhere(column, value);
+                for (const column of this.COLUMNS) {
+                    if (!indexes.includes(column) && !green[column]) {
+                        builder.orWhere(column, letter);
+                    }
                 }
                 return builder;
             });
         });
-        for (const column of ["1", "2", "3", "4", "5"]) {
-            query.whereNotIn(column, notHas);
+
+        // Eg. grey: [ "d", "u" ] -> Get words which don't have letters 'd' & 'u'
+        if (grey.length) {
+            for (const column of this.COLUMNS) {
+                query.whereNotIn(column, grey);
+            }
         }
-        // query.page(pageNo, pageSize);
+
+        query.page(pageNo, pageSize);
         // console.log(query.toKnexQuery().toQuery());
         return query;
     }
 }
 
+WordsModel.COLUMNS = ["1", "2", "3", "4", "5"];
 module.exports = WordsModel;

@@ -24,21 +24,23 @@ describe("/v1.0/words", () => {
         expect(res.body.page.hasNext).toBe(true);
     });
 
-    it("should return words with 'a' at index:1 and 'c' at index:3", async () => {
+    it("should return words with 'a' at index:1 and index:5 and 'c' at index:3", async () => {
         const res = await request
             .post(endpoint)
-            .send({ "green": { "a": 1, "c": 3 } });
+            .send({ "green": { "a": [1, 5], "c": [3] } });
 
         expect(res.status).toBe(200);
         expect(
-            res.body.items.every((ele) => ele[0] === "a" && ele[2] === "c")
+            res.body.items.every(
+                (ele) => ele[0] === "a" && ele[4] === "a" && ele[2] === "c"
+            )
         ).toBeTrue();
     });
 
     it("should return words with 'a' but not at index:1, and 'c' at index:3", async () => {
         const res = await request
             .post(endpoint)
-            .send({ "yellow": { "a": [1] }, "green": { "c": 3 } });
+            .send({ "yellow": { "a": [1] }, "green": { "c": [3] } });
 
         expect(res.status).toBe(200);
         expect(
@@ -51,7 +53,7 @@ describe("/v1.0/words", () => {
     it("should return words with 's' but not at index:3,  and 't' at index: 2, but not 'u' and 'i' in them", async () => {
         const res = await request.post(endpoint).send({
             "yellow": { "s": [3] },
-            "green": { "t": 2 },
+            "green": { "t": [2] },
             "grey": ["u", "i"],
         });
 

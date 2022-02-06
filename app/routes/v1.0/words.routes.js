@@ -14,7 +14,7 @@ router.post(
         .bail()
         .customSanitizer((value) => {
             Object.keys(value).forEach((key) => {
-                value[key] = value[key].toString();
+                value[key] = value[key].map((ele) => ele.toString());
             });
             return value;
         })

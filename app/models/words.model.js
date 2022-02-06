@@ -56,12 +56,14 @@ class WordsModel extends Model {
     static async getWords(green, yellow, grey, pageNo = 0, pageSize = 50) {
         const query = this.query();
 
-        // Eg. green: { "e": 3 } -> Get words with 'e' at index 3
-        Object.entries(green).forEach(([letter, index]) => {
+        // Eg. green: { "e": [1,3]  } -> Get words with 'e' at index 1 & 3
+        Object.entries(green).forEach(([letter, indexes]) => {
             // Only process the index which is a DB column
-            if (this.COLUMNS.includes(index)) {
-                query.where(index, letter);
-            }
+            indexes.forEach((index) => {
+                if (this.COLUMNS.includes(index)) {
+                    query.where(index, letter);
+                }
+            });
         });
 
         // Eg. yellow: { 't': [1,2] }

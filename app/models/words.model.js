@@ -53,8 +53,35 @@ class WordsModel extends Model {
         return _.omit(json, ["1", "2", "3", "4", "5"]);
     }
 
-    static async getWords(pageNo = 0, pageSize = 50) {
-        return this.query().page(pageNo, pageSize);
+    static async getWords(
+        indexSearchOpts,
+        has,
+        notHas,
+        pageNo = 0,
+        pageSize = 50
+    ) {
+        const query = this.query();
+        Object.entries(indexSearchOpts).forEach(([key, value]) => {
+            if (key[0] === "!") {
+                query.whereNotIn(key[1], value);
+            } else {
+                query.where(key[0], value); // Key will be of the form "1st", "2nd", "3rd" etc.
+            }
+        });
+        has.forEach((value) => {
+            query.where((builder) => {
+                for (const column of ["1", "2", "3", "4", "5"]) {
+                    builder.orWhere(column, value);
+                }
+                return builder;
+            });
+        });
+        for (const column of ["1", "2", "3", "4", "5"]) {
+            query.whereNotIn(column, notHas);
+        }
+        // query.page(pageNo, pageSize);
+        // console.log(query.toKnexQuery().toQuery());
+        return query;
     }
 }
 

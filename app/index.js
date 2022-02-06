@@ -1,5 +1,6 @@
 const express = require("express");
 const createError = require("http-errors");
+const bodyParser = require("body-parser");
 
 const config = require("../config");
 const v1Router = require("./routes/v1.0");
@@ -7,6 +8,8 @@ const v1Router = require("./routes/v1.0");
 const app = express();
 
 app.get("/ping", (req, res, next) => res.json({ "pong": "ok" }));
+
+app.use(bodyParser.json());
 
 app.use("/v1.0", v1Router);
 

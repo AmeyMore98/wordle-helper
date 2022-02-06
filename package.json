@@ -24,17 +24,18 @@
   },
   "homepage": "https://github.com/AmeyMore98/wordle-helper#readme",
   "dependencies": {
+    "body-parser": "^1.19.1",
     "convict": "^6.2.1",
     "express": "^4.17.2",
     "express-async-handler": "^1.2.0",
     "express-validator": "^6.14.0",
     "http-errors": "^2.0.0",
+    "knex": "^0.95.15",
     "lodash": "^4.17.21",
     "objection": "^3.0.1",
     "pg": "^8.7.1",
     "sqlite3": "^5.0.2",
-    "vscode-sqlite3": "^4.0.11",
-    "knex": "^0.95.15"
+    "vscode-sqlite3": "^4.0.11"
   },
   "devDependencies": {
     "eslint": "^8.8.0",

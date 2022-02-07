@@ -4,7 +4,13 @@ const { query, body } = require("express-validator");
 const _ = require("lodash");
 
 const WordsModel = require("../../models/words.model");
+const { getEntropies } = require("../../utils.js/entropy.utils");
 const routeUtils = require("../../utils.js/route.utils");
+
+function paginate(array, page_size, page_number) {
+    // human-readable page numbers usually start with 1, so we reduce 1 in the first argument
+    return array.slice((page_number - 1) * page_size, page_number * page_size);
+}
 
 router.post(
     "/",
@@ -46,29 +52,32 @@ router.post(
     expressAsyncHandler(async (req, res) => {
         const { pageNo = 1, pageSize = 50 } = req.query;
         const { green = {}, yellow = {}, grey = [] } = req.body;
-        let { results: items, total } = await WordsModel.getWords(
-            green,
-            yellow,
-            grey,
-            pageNo - 1, // ObjectionJs pages are 0-indexed
-            pageSize
-        );
+        let totalWords = await WordsModel.getWords(green, yellow, grey);
+        if (grey.length || !_.isEmpty(green) || !_.isEmpty(yellow)) {
+            totalWords = totalWords.map((item) => {
+                return {
+                    word: item.word,
+                    entropy: getEntropies(totalWords)(item.word),
+                };
+            });
+            totalWords = _.sortBy(totalWords, ["entropy"]);
+        }
 
         const page = {};
-        if (items.length) {
+        let words = [];
+        if (totalWords.length) {
+            words = paginate(totalWords, pageSize, pageNo);
             page.type = "number";
-            page.size = items.length;
+            page.size = totalWords.length;
             page.current = pageNo;
             // If total possible pages is greater than current page
             // Then more pages are left
-            page.hasNext = Math.ceil(total / pageSize) > pageNo;
-            page.itemTotal = total;
+            page.hasNext = Math.ceil(totalWords.length / pageSize) > pageNo;
+            page.itemTotal = totalWords.length;
         }
 
-        items = items.map((item) => item.word);
-
         return res.json({
-            items,
+            items: words,
             page,
         });
     })

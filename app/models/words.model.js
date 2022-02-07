@@ -53,7 +53,7 @@ class WordsModel extends Model {
         return _.omit(json, ["1", "2", "3", "4", "5"]);
     }
 
-    static async getWords(green, yellow, grey, pageNo = 0, pageSize = 50) {
+    static async getWords(green, yellow, grey) {
         const query = this.query();
 
         // Eg. green: { "e": [1,3]  } -> Get words with 'e' at index 1 & 3
@@ -93,7 +93,6 @@ class WordsModel extends Model {
             }
         }
 
-        query.page(pageNo, pageSize);
         // console.log(query.toKnexQuery().toQuery());
         return query;
     }

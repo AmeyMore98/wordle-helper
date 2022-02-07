@@ -10,7 +10,7 @@ describe("/v1.0/words", () => {
         expect(res.body.items).toBeDefined();
         expect(res.body.page).toBeDefined();
         expect(res.body.items.length).toBe(50);
-        expect(res.body.items[0]).toBeInstanceOf(String);
+        expect(res.body.items[0].word).toBeInstanceOf(String);
     });
 
     it("should return only first 10 words", async () => {
@@ -20,7 +20,7 @@ describe("/v1.0/words", () => {
         expect(res.body.items).toBeDefined();
         expect(res.body.page).toBeDefined();
         expect(res.body.items.length).toBe(10);
-        expect(res.body.items[0]).toBeInstanceOf(String);
+        expect(res.body.items[0].word).toBeInstanceOf(String);
         expect(res.body.page.hasNext).toBe(true);
     });
 
@@ -32,7 +32,8 @@ describe("/v1.0/words", () => {
         expect(res.status).toBe(200);
         expect(
             res.body.items.every(
-                (ele) => ele[0] === "a" && ele[4] === "a" && ele[2] === "c"
+                ({ word }) =>
+                    word[0] === "a" && word[4] === "a" && word[2] === "c"
             )
         ).toBeTrue();
     });
@@ -45,7 +46,8 @@ describe("/v1.0/words", () => {
         expect(res.status).toBe(200);
         expect(
             res.body.items.every(
-                (ele) => ele[0] !== "a" && ele[2] === "c" && ele.includes("a")
+                ({ word }) =>
+                    word[0] !== "a" && word[2] === "c" && word.includes("a")
             )
         ).toBeTrue();
     });
@@ -60,12 +62,12 @@ describe("/v1.0/words", () => {
         expect(res.status).toBe(200);
         expect(
             res.body.items.every(
-                (ele) =>
-                    ele[2] !== "s" &&
-                    ele.includes("s") &&
-                    ele[1] === "t" &&
-                    !ele.includes("u") &&
-                    !ele.includes("i")
+                ({ word }) =>
+                    word[2] !== "s" &&
+                    word.includes("s") &&
+                    word[1] === "t" &&
+                    !word.includes("u") &&
+                    !word.includes("i")
             )
         ).toBeTrue();
     });
